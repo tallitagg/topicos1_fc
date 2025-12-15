@@ -8,7 +8,7 @@ import java.util.List;
 
 @ApplicationScoped
 public class TipoIsolamentoRepository implements PanacheRepository<TipoIsolamento> {
-
+    //TODO implementar PanacheQuery
     public List<TipoIsolamento> findByDescricao(String descricao) {
         return find("UPPER(descricao) LIKE ?1", "%" + descricao.toUpperCase() + "%").list();
     }

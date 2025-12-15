@@ -8,6 +8,8 @@ import java.util.List;
 
 @ApplicationScoped
 public class FuncionarioRepository implements PanacheRepository<Funcionario> {
+
+    //TODO implementar PanacheQuery
     public List<Funcionario> findByCargo(String cargo) {
         return find("UPPER(cargo) LIKE ?1", "%" + cargo.toUpperCase() + "%").list();
     }

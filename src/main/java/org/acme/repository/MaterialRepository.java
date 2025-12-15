@@ -8,7 +8,7 @@ import java.util.List;
 
 @ApplicationScoped
 public class MaterialRepository implements PanacheRepository<Material> {
-
+    //TODO implementar PanacheQuery
     public List<Material> findByTipo(String tipo) {
         return find("UPPER(tipo) LIKE ?1", "%" + tipo.toUpperCase() + "%").list();
     }

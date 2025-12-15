@@ -2,9 +2,10 @@ package org.acme.model;
 
 public enum FormaPagamento {
 
-    CREDITO(1l, "Crédito"),
-    DEBITO(2l, "Débito"),
-    PIX(3l, "Pix");
+    CARTAO_CREDITO(1l, "Crédito"),
+    CARTAO_DEBITO(2l, "Débito"),
+    PIX(3l, "Pix"),
+    BOLETO(4l, "Boleto");
 
     public final Long ID;
     public final String LABEL;

@@ -10,7 +10,7 @@ import org.acme.service.ClienteService;
 
 import java.util.List;
 
-@Path("/clientes")
+@Path("clientes")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ClienteResource {

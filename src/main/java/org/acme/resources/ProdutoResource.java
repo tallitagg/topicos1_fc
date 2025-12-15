@@ -10,7 +10,7 @@ import org.acme.service.ProdutoService;
 
 import java.util.logging.Logger;
 
-@Path("/produtos")
+@Path("produtos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProdutoResource {

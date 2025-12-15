@@ -8,7 +8,7 @@ import java.util.List;
 
 @ApplicationScoped
 public class MarcaRepository implements PanacheRepository<Marca> {
-
+    //TODO implementar PanacheQuery
     public List<Marca> findByNome(String nome) {
         return find("""
         select distinct m

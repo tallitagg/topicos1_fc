@@ -10,7 +10,7 @@ import org.acme.service.CorService;
 
 import java.util.logging.Logger;
 
-@Path("/cores")
+@Path("cores")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CorResource {

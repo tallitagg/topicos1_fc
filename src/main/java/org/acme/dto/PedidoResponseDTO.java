@@ -1,35 +1,35 @@
 package org.acme.dto;
 
-import org.acme.model.FormaPagamento;
-import org.acme.model.Pedido;
+import org.acme.model.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public record PedidoResponseDTO(
         Long id,
-        LocalDateTime data,
-        Double total,
-        UsuarioResponseDTO usuario,
-        List<ItemPedidoResponseDTO> itensPedido,
-        String enderecoEntrega,
-        FormaPagamento formaPagamento
+        Cliente cliente,
+        StatusPedido statusPedido,
+        Pagamento pagamento,
+        EnderecoEntrega enderecoEntrega,
+        Double frete,
+        List<ItemPedidoResponseDTO> itemPedido
 ) {
     public static PedidoResponseDTO valueOf(Pedido pedido) {
         List<ItemPedidoResponseDTO> itens =
                 pedido.getItensPedido() == null
                         ? List.of()
-                        : pedido.getItensPedido().stream().map(ItemPedidoResponseDTO::valueOf).toList();
+                        : pedido.getItensPedido()
+                        .stream()
+                        .map(ItemPedidoResponseDTO::valueOf)
+                        .toList();
 
         return new PedidoResponseDTO(
                 pedido.getId(),
-                pedido.getDataPedido(),
-                pedido.getTotal(),
-                UsuarioResponseDTO.valueOf(pedido.getUsuario()),
-                itens,
-                pedido.enderecoEntrega,
-                pedido.getFormaPagamento()
+                pedido.getCliente(),
+                pedido.getStatusPedido(),
+                pedido.getPagamento(),
+                pedido.getEnderecoEntrega(),
+                pedido.getFrete(),
+                itens
         );
     }
 }
-

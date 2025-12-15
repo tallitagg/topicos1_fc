@@ -10,7 +10,7 @@ import org.acme.service.TipoTampaService;
 
 import java.util.logging.Logger;
 
-@Path("/tipoTampas")
+@Path("tipoTampas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TipoTampaResource {

@@ -10,7 +10,7 @@ import org.acme.service.TipoIsolamentoService;
 
 import java.util.logging.Logger;
 
-@Path("/tipoIsolamentos")
+@Path("tipoIsolamentos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TipoIsolamentoResource {

@@ -8,7 +8,7 @@ import java.util.List;
 
 @ApplicationScoped
 public class ModeloRepository implements PanacheRepository<Modelo> {
-
+    //TODO implementar PanacheQuery
     public List<Modelo> findByNome(String nome) {
         return find("UPPER(nome) LIKE ?1", "%" + nome.toUpperCase() + "%").list();
     }

@@ -6,7 +6,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import java.util.*;
 
-@Provider
+//@Provider
 public class BusinessExceptionHandler implements ExceptionMapper<BusinessException> {
 
     @Override

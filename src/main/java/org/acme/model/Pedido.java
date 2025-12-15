@@ -1,6 +1,8 @@
 package org.acme.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import org.acme.dto.PagamentoDTO;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,22 +11,53 @@ import java.util.List;
 @Entity
 public class Pedido extends DefaultEntity {
     private LocalDateTime dataPedido;
+
+    @Min(0)
     private Double total;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
+
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "id_endereco_entrega")
+    private EnderecoEntrega enderecoEntrega;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private FormaPagamento formaPagamento;
+    @Enumerated(EnumType.STRING)
+    private StatusPedido statusPedido;
 
-    public String enderecoEntrega;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Pagamento pagamento;
 
     public Double frete;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.PERSIST)
     private List<ItemPedido> itensPedido = new ArrayList<>();
+
+    public void setEnderecoEntrega(EnderecoEntrega enderecoEntrega) {
+        this.enderecoEntrega = enderecoEntrega;
+    }
+
+    public EnderecoEntrega getEnderecoEntrega() {
+        return enderecoEntrega;
+    }
+
+    public StatusPedido getStatusPedido() {
+        return statusPedido;
+    }
+
+    public void setStatusPedido(StatusPedido statusPedido) {
+        this.statusPedido = statusPedido;
+    }
+
+    public Pagamento getPagamento() {
+        return pagamento;
+    }
+
+    public void setPagamento(Pagamento pagamento) {
+        this.pagamento = pagamento;
+    }
 
     public LocalDateTime getDataPedido() {
         return dataPedido;
@@ -42,16 +75,12 @@ public class Pedido extends DefaultEntity {
         this.total = total;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public FormaPagamento getFormaPagamento() {
-        return formaPagamento;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     public List<ItemPedido> getItensPedido() {
@@ -60,18 +89,6 @@ public class Pedido extends DefaultEntity {
 
     public void setItensPedido(List<ItemPedido> itensPedido) {
         this.itensPedido = itensPedido;
-    }
-
-    public void setFormaPagamento(FormaPagamento formaPagamento) {
-        this.formaPagamento = formaPagamento;
-    }
-
-    public String getEnderecoEntrega() {
-        return enderecoEntrega;
-    }
-
-    public void setEnderecoEntrega(String enderecoEntrega) {
-        this.enderecoEntrega = enderecoEntrega;
     }
 
     public Double getFrete() {

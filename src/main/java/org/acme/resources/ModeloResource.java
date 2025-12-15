@@ -10,7 +10,7 @@ import org.acme.service.ModeloService;
 
 import java.util.logging.Logger;
 
-@Path("/modelos")
+@Path("modelos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ModeloResource {

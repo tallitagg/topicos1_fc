@@ -10,7 +10,7 @@ import org.acme.service.MaterialService;
 
 import java.util.logging.Logger;
 
-@Path("/materiais")
+@Path("materiais")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MaterialResource {

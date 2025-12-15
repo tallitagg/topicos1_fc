@@ -45,7 +45,6 @@ public class ModeloResourceTest {
                 .body("nome", CoreMatchers.hasItem("SteelCore 750"));
     }
 
-    // TODO corrigir
     @Test
     void buscarPorMarca() {
         RestAssured.given()

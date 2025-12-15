@@ -1,31 +1,31 @@
 package org.acme.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "cliente")
 public class Cliente extends DefaultEntity{
 
-    @OneToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="usuario_id")
     private Usuario usuario;
 
-    private String cep;
     private String cpf;
-    private String endereco;
-    private String estado;
-    private String cidade;
 
-    public String getCpf() {
-        return cpf;
-    }
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<EnderecoEntrega> endereco;
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Pedido> pedido;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Perfil perfil;
 
     public Usuario getUsuario() {
         return usuario;
@@ -35,35 +35,35 @@ public class Cliente extends DefaultEntity{
         this.usuario = usuario;
     }
 
-    public String getCep() {
-        return cep;
+    public String getCpf() {
+        return cpf;
     }
 
-    public void setCep(String cep) {
-        this.cep = cep;
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
-    public String getEndereco() {
+    public List<EnderecoEntrega> getEndereco() {
         return endereco;
     }
 
-    public void setEndereco(String endereco) {
+    public void setEndereco(List<EnderecoEntrega> endereco) {
         this.endereco = endereco;
     }
 
-    public String getEstado() {
-        return estado;
+    public List<Pedido> getPedido() {
+        return pedido;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setPedido(List<Pedido> pedido) {
+        this.pedido = pedido;
     }
 
-    public String getCidade() {
-        return cidade;
+    public Perfil getPerfil() {
+        return perfil;
     }
 
-    public void setCidade(String cidade) {
-        this.cidade = cidade;
+    public void setPerfil(Perfil perfil) {
+        this.perfil = perfil;
     }
 }

@@ -10,7 +10,7 @@ import org.acme.service.MarcaService;
 
 import java.util.logging.Logger;
 
-@Path("/marcas")
+@Path("marcas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MarcaResource {
