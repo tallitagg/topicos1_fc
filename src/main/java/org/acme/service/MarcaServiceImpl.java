@@ -5,10 +5,13 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.acme.dto.MarcaDTO;
 import org.acme.dto.MarcaResponseDTO;
+import org.acme.exceptions.BusinessException;
+import org.acme.exceptions.RecursoNaoEncontradoException;
 import org.acme.model.Marca;
 import org.acme.model.Modelo;
 import org.acme.repository.MarcaRepository;
 import org.acme.repository.ModeloRepository;
+import org.acme.repository.ProdutoRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +24,8 @@ public class MarcaServiceImpl implements MarcaService {
 
     @Inject
     ModeloRepository modeloRepository;
+    @Inject
+    ProdutoRepository produtoRepository;
 
     @Override
     public List<MarcaResponseDTO> findAll() {
@@ -70,7 +75,7 @@ public class MarcaServiceImpl implements MarcaService {
     @Transactional
     public void update(Long id, MarcaDTO dto) {
         Marca marca = marcaRepository.findById(id);
-        if (marca == null) throw new IllegalArgumentException("Marca não encontrada: " + id);
+        if (marca == null) throw new RecursoNaoEncontradoException("Marca não encontrada: " + id);
 
         marca.setNome(dto.nome());
 
@@ -97,11 +102,10 @@ public class MarcaServiceImpl implements MarcaService {
         }
 
         for (Modelo mRemovido : atuais.values()) {
-            long qtdProdutos = 0L;
+            long qtdProdutos = produtoRepository.count("modelo", mRemovido);
             if (qtdProdutos > 0) {
-                throw new jakarta.ws.rs.WebApplicationException(
-                        "Não é possível remover o modelo '" + mRemovido.getNome()
-                                + "' da marca porque há produtos vinculados (" + qtdProdutos + ").", 409);
+                throw new BusinessException("Não é possível remover o modelo '" + mRemovido.getNome() +
+                        "' da marca porque há produtos vinculados (" + qtdProdutos + ").", 409, "CONFLICT");
             }
             marca.getModelos().remove(mRemovido);
         }
@@ -111,6 +115,8 @@ public class MarcaServiceImpl implements MarcaService {
     @Override
     @Transactional
     public void delete(Long id) {
-        marcaRepository.deleteById(id);
+        boolean deleted = marcaRepository.deleteById(id);
+        if (!deleted)
+            throw new RecursoNaoEncontradoException("Marca não encontrada: id=" + id);
     }
 }

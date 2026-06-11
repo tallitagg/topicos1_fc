@@ -38,6 +38,13 @@ public class PedidoResource {
     }
 
     @GET
+    @Path("/buscarPorId/{id}")
+    @RolesAllowed({"ADM"})
+    public PedidoResponseDTO findById(@PathParam("id") Long id) {
+        return pedidoService.findById(id);
+    }
+
+    @GET
     @Path("/meusPedidos")
     @RolesAllowed({"USER"})
     public Response buscarMinhas(@Context SecurityContext securityContext) {

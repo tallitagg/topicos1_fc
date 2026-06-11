@@ -4,6 +4,7 @@ import org.acme.dto.PedidoDTO;
 import org.acme.dto.PedidoResponseDTO;
 import org.acme.model.StatusPedido;
 import org.acme.model.Usuario;
+import org.acme.dto.TipoTampaResponseDTO;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public interface PedidoService {
     List<PedidoResponseDTO> getAll();
 
     List<PedidoResponseDTO> findByUsuario(String username);
+
+    PedidoResponseDTO findById(Long id);
 
     PedidoResponseDTO atualizarStatus(Long idPedido, StatusPedido novoStatus);
 

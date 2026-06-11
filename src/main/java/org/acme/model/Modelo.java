@@ -39,4 +39,9 @@ public class Modelo extends DefaultEntity{
     public void setMarca(Marca marca) {
         this.marca = marca;
     }
+
+    public Object getProdutos() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getProdutos'");
+    }
 }

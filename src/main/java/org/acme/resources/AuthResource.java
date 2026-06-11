@@ -8,6 +8,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.dto.AuthDTO;
+import org.acme.exceptions.UnauthorizedException;
 import org.acme.model.Usuario;
 import org.acme.service.HashService;
 import org.acme.service.JwtService;
@@ -29,17 +30,12 @@ public class AuthResource {
     @POST
     @Produces(MediaType.TEXT_PLAIN)
     public Response login(AuthDTO dto) {
-        String hash = null;
-        try {
-            hash = hashService.getHashSenha(dto.senha());
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
+        String hash = hashService.getHashSenha(dto.senha());
 
         Usuario usuario = usuarioService.findByUsernameAndSenha(dto.username(), hash);
 
         if (usuario == null)
-            return Response.noContent().build();
+            throw new UnauthorizedException("Credenciais inválidas");
 
         String token = jwtService.generateJwt(usuario.getUsername(), usuario.getPerfil());
 

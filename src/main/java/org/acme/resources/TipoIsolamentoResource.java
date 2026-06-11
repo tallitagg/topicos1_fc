@@ -1,5 +1,6 @@
 package org.acme.resources;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -11,6 +12,7 @@ import org.acme.service.TipoIsolamentoService;
 import java.util.logging.Logger;
 
 @Path("tipoIsolamentos")
+@PermitAll
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TipoIsolamentoResource {
@@ -21,14 +23,14 @@ public class TipoIsolamentoResource {
     TipoIsolamentoService tipoIsolamentoService;
 
     @GET
-    @RolesAllowed({"USER", "ADM"})
+    @PermitAll
     public Response buscarTodos() {
         LOG.info("TipoIsolamentoResource#buscarTodas chamado");
         return Response.ok(tipoIsolamentoService.findAll()).build();
     }
 
     @GET
-    @RolesAllowed({"USER", "ADM"})
+    @PermitAll
     @Path("/descricao/{descricao}")
     public Response buscarPorDescricao(@PathParam("descricao") String descricao) {
         LOG.info("TipoIsolamentoResource#buscarPorDescricao chamado - descricao=" + descricao);
@@ -36,7 +38,7 @@ public class TipoIsolamentoResource {
     }
 
     @GET
-    @RolesAllowed({"USER", "ADM"})
+    @PermitAll
     @Path("/eficienciaTermica/{eficienciaTermica}")
     public Response buscarPorEficienciaTermica(@PathParam("eficienciaTermica") Long eficienciaTermica) {
         LOG.info("TipoIsolamentoResource#buscarPorDescricao chamado - Eficiencia Termica=" + eficienciaTermica);
@@ -44,7 +46,7 @@ public class TipoIsolamentoResource {
     }
 
     @POST
-    @RolesAllowed({"ADM"})
+    @PermitAll
     public Response incluir(TipoIsolamentoDTO dto) {
         LOG.info("TipoIsolamentoResource#incluir chamado - dto=" + dto);
         return Response.status(Response.Status.CREATED).entity(tipoIsolamentoService.create(dto)).build();
@@ -52,7 +54,7 @@ public class TipoIsolamentoResource {
 
     @PUT
     @Path("/{id}")
-    @RolesAllowed({"ADM"})
+    @PermitAll
     public Response atualizar(@PathParam("id") Long id, TipoIsolamentoDTO dto) {
         LOG.info("TipoIsolamentoResource#atualziar chamado - id=" + id + ", dto=" + dto);
         tipoIsolamentoService.update(id, dto);
@@ -60,7 +62,7 @@ public class TipoIsolamentoResource {
     }
 
     @DELETE
-    @RolesAllowed({"ADM"})
+    @PermitAll
     @Path("/{id}")
     public Response excluir(@PathParam("id") Long id) {
         LOG.info("TipoIsolamentoResource#excluir chamado - id=" + id);

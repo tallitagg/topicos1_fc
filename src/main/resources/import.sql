@@ -84,16 +84,46 @@ VALUES ('Flip-top', 'PP/Tritan'),
 
 INSERT INTO produto
 (nome, descricao, preco, capacidade, estoque, id_modelo, id_tipotampa, id_marca, id_tipoisolamento, id_material)
-VALUES ('Frost 500 Inox', 'Parede dupla a vácuo, ótima para academia', 149, 0.50, 500, 1, 1, 1, 1, 1),
-       ('Urban Flip 600', 'Tampa flip para uso urbano diário', 129, 0.60, 530,2, 1, 2, 2, 2),
-       ('Adventure 1L', 'Trava reforçada para trilha/camping', 199, 1.00, 332, 3, 2, 3, 3, 1),
-       ('Kids Pop 350', 'Bico macio e alça infantil', 89, 0.35, 442, 3, 9, 4, 4, 5),
-       ('Office Slim 400', 'Perfil fino, cabe no porta-copo', 119, 0.40, 765, 5, 7, 5, 2, 3),
-       ('Sport Pro 700', 'Alta retenção térmica e performance', 179, 0.70, 534, 6, 6, 6, 5, 1),
-       ('Trail Rugged 900', 'Texturizada, super resistente para trilhas', 189, 0.90, 634, 7, 2, 7, 3, 2),
-       ('Gourmet Infuser 600', 'Com infusor para chá e frutas, vedação premium', 159, 0.60, 512, 8, 10, 8, 9, 4),
-       ('Minimal 500', 'Design minimalista com acabamento fosco', 139, 0.50, 523, 9, 3, 9, 1, 1),
-       ('Hydra 750', 'Bico retrátil esportivo, alta durabilidade', 169, 0.75, 523, 11, 4, 10, 10, 2);
+VALUES
+    ('Frost 500 Inox',
+     'Produto: Frost 500 Inox | Capacidade: 0.50L | Preço: 149 | Estoque: 500 | ModeloID: 1 | TipoTampaID: 1 | MarcaID: 1 | TipoIsolamentoID: 1 | MaterialID: 1',
+     149, 0.50, 500, 1, 1, 1, 1, 1),
+
+    ('Urban Flip 600',
+     'Produto: Urban Flip 600 | Capacidade: 0.60L | Preço: 129 | Estoque: 530 | ModeloID: 2 | TipoTampaID: 1 | MarcaID: 2 | TipoIsolamentoID: 2 | MaterialID: 2',
+     129, 0.60, 530, 2, 1, 2, 2, 2),
+
+    ('Adventure 1L',
+     'Produto: Adventure 1L | Capacidade: 1.00L | Preço: 199 | Estoque: 332 | ModeloID: 3 | TipoTampaID: 2 | MarcaID: 3 | TipoIsolamentoID: 3 | MaterialID: 1',
+     199, 1.00, 332, 3, 2, 3, 3, 1),
+
+    ('Kids Pop 350',
+     'Produto: Kids Pop 350 | Capacidade: 0.35L | Preço: 89 | Estoque: 442 | ModeloID: 3 | TipoTampaID: 9 | MarcaID: 4 | TipoIsolamentoID: 4 | MaterialID: 5',
+     89, 0.35, 442, 3, 9, 4, 4, 5),
+
+    ('Office Slim 400',
+     'Produto: Office Slim 400 | Capacidade: 0.40L | Preço: 119 | Estoque: 765 | ModeloID: 5 | TipoTampaID: 7 | MarcaID: 5 | TipoIsolamentoID: 2 | MaterialID: 3',
+     119, 0.40, 765, 5, 7, 5, 2, 3),
+
+    ('Sport Pro 700',
+     'Produto: Sport Pro 700 | Capacidade: 0.70L | Preço: 179 | Estoque: 534 | ModeloID: 6 | TipoTampaID: 6 | MarcaID: 6 | TipoIsolamentoID: 5 | MaterialID: 1',
+     179, 0.70, 534, 6, 6, 6, 5, 1),
+
+    ('Trail Rugged 900',
+     'Produto: Trail Rugged 900 | Capacidade: 0.90L | Preço: 189 | Estoque: 634 | ModeloID: 7 | TipoTampaID: 2 | MarcaID: 7 | TipoIsolamentoID: 3 | MaterialID: 2',
+     189, 0.90, 634, 7, 2, 7, 3, 2),
+
+    ('Gourmet Infuser 600',
+     'Produto: Gourmet Infuser 600 | Capacidade: 0.60L | Preço: 159 | Estoque: 512 | ModeloID: 8 | TipoTampaID: 10 | MarcaID: 8 | TipoIsolamentoID: 9 | MaterialID: 4',
+     159, 0.60, 512, 8, 10, 8, 9, 4),
+
+    ('Minimal 500',
+     'Produto: Minimal 500 | Capacidade: 0.50L | Preço: 139 | Estoque: 523 | ModeloID: 9 | TipoTampaID: 3 | MarcaID: 9 | TipoIsolamentoID: 1 | MaterialID: 1',
+     139, 0.50, 523, 9, 3, 9, 1, 1),
+
+    ('Hydra 750',
+     'Produto: Hydra 750 | Capacidade: 0.75L | Preço: 169 | Estoque: 523 | ModeloID: 11 | TipoTampaID: 4 | MarcaID: 10 | TipoIsolamentoID: 10 | MaterialID: 2',
+     169, 0.75, 523, 11, 4, 10, 10, 2);
 
 INSERT INTO produto_cor (id_cor, id_produto)
 VALUES (1, 1),

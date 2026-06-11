@@ -1,5 +1,6 @@
 package org.acme.resources;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -7,10 +8,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.dto.MaterialDTO;
 import org.acme.service.MaterialService;
+import jakarta.validation.Valid;
 
 import java.util.logging.Logger;
 
 @Path("materiais")
+@PermitAll
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MaterialResource {
@@ -21,31 +24,37 @@ public class MaterialResource {
     MaterialService materialService;
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @PermitAll
     public Response buscarTodos() {
         LOG.info("MaterialResource#buscarTodas chamado");
         return Response.ok(materialService.findAll()).build();
     }
 
     @GET
-    @Path("/{tipo}")
-    @RolesAllowed({"USER","ADM"})
+    @Path("/tipo/{tipo}")
+    @PermitAll
     public Response buscarPorTipo(@PathParam("tipo") String tipo) {
         LOG.info("MaterialResource#buscarPorNome chamado - tipo=" + tipo);
         return Response.ok(materialService.findByTipo(tipo)).build();
     }
 
     @POST
-    @RolesAllowed({"ADM"})
-    public Response incluir(MaterialDTO dto) {
+    @PermitAll
+    public Response incluir(@Valid MaterialDTO dto) {
         LOG.info("MaterialResource#incluir chamado - dto=" + dto);
         return Response.status(Response.Status.CREATED).entity(materialService.create(dto)).build();
     }
+    @GET
+    @Path("/{id}")
+    @PermitAll
+    public Response buscarPorId(@PathParam("id") Long id) {
+    return Response.ok(materialService.findById(id)).build();
+}
 
     @PUT
     @Path("/{id}")
-    @RolesAllowed({"ADM"})
-    public Response atualizar(@PathParam("id") Long id, MaterialDTO dto) {
+    @PermitAll
+    public Response atualizar(@PathParam("id") Long id, @Valid MaterialDTO dto) {
         LOG.info("MaterialResource#alterar chamado - id=" + id + ", dto=" + dto);
         materialService.update(id, dto);
         return Response.noContent().build();
@@ -53,7 +62,7 @@ public class MaterialResource {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed({"ADM"})
+    @PermitAll
     public Response excluir(@PathParam("id") Long id) {
         LOG.info("MaterialResource#excluir chamado - id=" + id);
         materialService.delete(id);

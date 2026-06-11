@@ -1,10 +1,11 @@
 package org.acme.mapper;
 
 import org.acme.dto.PagamentoDTO;
+import org.acme.exceptions.BusinessException;
 import org.acme.model.FormaPagamento;
 import org.acme.model.Pagamento;
 
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 public final class PagamentoMapper {
 
@@ -14,18 +15,14 @@ public final class PagamentoMapper {
     public static Pagamento toEntity(PagamentoDTO dto) {
         if (dto == null) return null;
 
-        FormaPagamento forma = parseFormaPagamento(dto.formaPagamento());
+        FormaPagamento formaPagamento = parseFormaPagamento(dto.formaPagamento());
 
         Pagamento pagamento = new Pagamento();
-        pagamento.setFormaPagamento(forma);
+        pagamento.setFormaPagamento(formaPagamento);
         pagamento.setConfirmado(false);
-        pagamento.setDataPagamento(LocalDateTime.now());
 
-        switch (forma) {
-            case PIX -> {
-                pagamento.setNumParcelas(1);
-                pagamento.setChavePix(dto.chavePix());
-            }
+        switch (formaPagamento) {
+            case PIX -> pagamento.setChavePixCopiaCola(gerarChavePixRandom());
             case CARTAO_CREDITO -> {
                 pagamento.setNumParcelas(dto.parcelas() == null ? 1 : dto.parcelas());
                 pagamento.setNumeroCartao(dto.numeroCartao());
@@ -40,15 +37,37 @@ public final class PagamentoMapper {
                 pagamento.setValidade(dto.validade());
                 pagamento.setCvv(dto.cvv());
             }
-            case BOLETO -> pagamento.setNumParcelas(1);
+            case BOLETO -> {
+                pagamento.setNumParcelas(1);
+                pagamento.setLinhaDigitavel(gerarLinhaDigitavel());
+                pagamento.setCodigoDeBarras(gerarCodigoBarras());
+            }
         }
-
         return pagamento;
+    }
+
+    private static String gerarChavePixRandom() {
+        return UUID.randomUUID().toString().replace("-", "").substring(0, 32);
+    }
+
+    private static String gerarLinhaDigitavel() {
+        return gerarNumero(47);
+    }
+
+    private static String gerarCodigoBarras() {
+        return gerarNumero(44);
+    }
+
+    private static String gerarNumero(int tamanho) {
+        StringBuilder stringBuilder = new StringBuilder(tamanho);
+        for (int i = 0; i < tamanho; i++)
+            stringBuilder.append((int) (Math.random() * 10));
+        return stringBuilder.toString();
     }
 
     private static FormaPagamento parseFormaPagamento(String valor) {
         if (valor == null || valor.isBlank()) {
-            throw new IllegalArgumentException("formaPagamento é obrigatório");
+            throw new BusinessException("formaPagamento é obrigatório", 400, "FORMA_PAGAMENTO_OBRIGATORIO");
         }
 
         String v = valor.trim();
@@ -60,12 +79,12 @@ public final class PagamentoMapper {
         }
 
         // tenta pelo LABEL: "Crédito", "Débito", "Pix", "Boleto"
-        for (FormaPagamento fp : FormaPagamento.values()) {
-            if (fp.LABEL.equalsIgnoreCase(v)) {
-                return fp;
+        for (FormaPagamento formaPagamento : FormaPagamento.values()) {
+            if (formaPagamento.LABEL.equalsIgnoreCase(v)) {
+                return formaPagamento;
             }
         }
 
-        throw new IllegalArgumentException("formaPagamento inválido: " + valor);
+        throw new BusinessException("formaPagamento inválido: " + valor, 400, "FORMA_PAGAMENTO_INVALIDO");
     }
 }

@@ -9,6 +9,8 @@ public record CadastroBasicoDTO(
         String nome,
         @NotEmpty(message = "Já existe este username")
         String username,
+        String email,
+        String telefone,
         String senha,
         Perfil perfil,
         String cpf

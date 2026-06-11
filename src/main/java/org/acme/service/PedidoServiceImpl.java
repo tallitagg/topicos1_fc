@@ -9,12 +9,17 @@ import jakarta.ws.rs.core.Response;
 import org.acme.dto.ItemPedidoDTO;
 import org.acme.dto.PedidoDTO;
 import org.acme.dto.PedidoResponseDTO;
+import org.acme.exceptions.BusinessException;
+import org.acme.exceptions.EstoqueInsuficienteException;
+import org.acme.exceptions.RecursoNaoEncontradoException;
+import org.acme.exceptions.UnauthorizedException;
 import org.acme.mapper.PagamentoMapper;
 import org.acme.model.*;
 import org.acme.repository.ClienteRepository;
 import org.acme.repository.EnderecoEntregaRepository;
 import org.acme.repository.PedidoRepository;
 import org.acme.repository.ProdutoRepository;
+import org.acme.dto.TipoTampaResponseDTO;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,6 +52,16 @@ public class PedidoServiceImpl implements PedidoService {
                 .map(PedidoResponseDTO::valueOf)
                 .toList();
     }
+    
+    @Override
+    @Transactional
+    public PedidoResponseDTO findById(Long id) {
+        Pedido pedido = pedidoRepository.findById(id);
+
+        if (pedido == null)
+            return null;
+        return PedidoResponseDTO.valueOf(pedido);
+    }
 
     @Override
     @Transactional
@@ -63,20 +78,20 @@ public class PedidoServiceImpl implements PedidoService {
         LOGGER.info("Criando novo pedido para usuário autenticado: " + username);
 
         if (username == null || username.isBlank()) {
-            throw new WebApplicationException("Usuário inválido", Response.Status.BAD_REQUEST);
+            throw new UnauthorizedException("Usuário inválido ou não autenticado");
         }
 
         Cliente cliente = clienteRepository.findByUsername(username).firstResult();
         if (cliente == null) {
-            throw new WebApplicationException("Usuário não encontrado", Response.Status.NOT_FOUND);
+            throw new RecursoNaoEncontradoException("Usuário não encontrado");
         }
 
         if (dto == null || dto.itens() == null || dto.itens().isEmpty()) {
-            throw new WebApplicationException("Pedido sem itens", Response.Status.BAD_REQUEST);
+            throw new BusinessException("Pedido sem itens", 400, "PEDIDO_SEM_ITENS");
         }
 
         if (dto.enderecoEntrega() == null) {
-            throw new WebApplicationException("Endereço de entrega é obrigatório", Response.Status.BAD_REQUEST);
+            throw new BusinessException("Endereço de entrega é obrigatório", 400, "ENDERECO_OBRIGATORIO");
         }
 
         Pedido pedido = new Pedido();
@@ -102,29 +117,30 @@ public class PedidoServiceImpl implements PedidoService {
 
         for (ItemPedidoDTO itemDTO : dto.itens()) {
             Produto produto = produtoRepository.findById(itemDTO.idProduto());
-            if (produto == null) {
-                throw new WebApplicationException("Produto não encontrado: id=" + itemDTO.idProduto(), Response.Status.NOT_FOUND);
-            }
+            if (produto == null)
+                throw new RecursoNaoEncontradoException("Produto não encontrado: id=" + itemDTO.idProduto());
+
 
             Integer estoqueAtual = produto.getEstoque();
-            if (estoqueAtual == null) {
+            if (estoqueAtual == null)
                 estoqueAtual = 0;
-            }
+
 
             if (estoqueAtual < itemDTO.quantidade()) {
-                throw new WebApplicationException("Estoque insuficiente para o produto: " + produto.getNome(), Response.Status.BAD_REQUEST);
+                throw new EstoqueInsuficienteException("Estoque insuficiente para o produto: " + produto.getNome());
             }
 
             produto.setEstoque(estoqueAtual - itemDTO.quantidade());
+            produtoRepository.persist(produto);
 
-            ItemPedido ip = new ItemPedido();
-            ip.setPedido(pedido);
-            ip.setProduto(produto);
-            ip.setQuantidade(itemDTO.quantidade());
-            ip.setPreco(produto.getPreco());
+            ItemPedido itemPedido = new ItemPedido();
+            itemPedido.setPedido(pedido);
+            itemPedido.setProduto(produto);
+            itemPedido.setQuantidade(itemDTO.quantidade());
+            itemPedido.setPreco(produto.getPreco());
 
-            total += ip.getPreco() * ip.getQuantidade();
-            itensPedido.add(ip);
+            total += itemPedido.getPreco() * itemPedido.getQuantidade();
+            itensPedido.add(itemPedido);
         }
 
         pedido.setItensPedido(itensPedido);
@@ -147,16 +163,24 @@ public class PedidoServiceImpl implements PedidoService {
         Pedido pedido = pedidoRepository.findById(idPedido);
         if (pedido == null) {
             LOGGER.severe("Pedido não encontrado: id = " + idPedido);
-            throw new WebApplicationException("Pedido não encontrado", Response.Status.NOT_FOUND);
+            throw new RecursoNaoEncontradoException("Pedido não encontrado");
         }
 
         pedido.setStatusPedido(novoStatus);
-        pedidoRepository.persist(pedido);
+
+        if (novoStatus == StatusPedido.PAGO) {
+            if (pedido.getPagamento() == null)
+                pedido.setPagamento((new Pagamento()));
+
+            if (pedido.getPagamento().getDataPagamento() == null)
+                pedido.getPagamento().setDataPagamento(LocalDateTime.now());
+
+            if (Boolean.FALSE.equals(pedido.getPagamento().getConfirmado()))
+                pedido.getPagamento().setConfirmado(true);
+        }
 
         return PedidoResponseDTO.valueOf(pedido);
     }
-
-
 
     private String normalizarCep(String cep) {
         if (cep == null) return null;

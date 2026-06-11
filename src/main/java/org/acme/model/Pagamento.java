@@ -1,11 +1,13 @@
 package org.acme.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,11 +22,14 @@ public class Pagamento extends DefaultEntity {
     @Column(nullable = false)
     private Boolean confirmado = false;
 
-    private String chavePix;
+    private String chavePixCopiaCola;
 
+    @Pattern(regexp = "\\d{16}", message = "O número do cartão deve conter exatamente 16 dígitos")
     private String numeroCartao;
     private String nomeTitular;
     private String validade;
+
+    @Pattern(regexp = "\\d{3}", message = "O cvv deve ter exatamente 3 dígitos")
     private String cvv;
 
     private String codigoDeBarras;
@@ -36,6 +41,7 @@ public class Pagamento extends DefaultEntity {
 
     private BigDecimal valorParcela;
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataPagamento;
 
     public FormaPagamento getFormaPagamento() {
@@ -54,12 +60,12 @@ public class Pagamento extends DefaultEntity {
         this.confirmado = confirmado;
     }
 
-    public String getChavePix() {
-        return chavePix;
+    public String getChavePixCopiaCola() {
+        return chavePixCopiaCola;
     }
 
-    public void setChavePix(String chavePix) {
-        this.chavePix = chavePix;
+    public void setChavePixCopiaCola(String chavePixCopiaCola) {
+        this.chavePixCopiaCola = chavePixCopiaCola;
     }
 
     public String getNumeroCartao() {

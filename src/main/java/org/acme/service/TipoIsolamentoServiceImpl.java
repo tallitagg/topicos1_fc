@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.acme.dto.TipoIsolamentoDTO;
 import org.acme.dto.TipoIsolamentoResponseDTO;
+import org.acme.exceptions.RecursoNaoEncontradoException;
 import org.acme.model.TipoIsolamento;
 import org.acme.repository.TipoIsolamentoRepository;
 
@@ -70,6 +71,9 @@ public class TipoIsolamentoServiceImpl implements TipoIsolamentoService {
     public void update(Long id, TipoIsolamentoDTO dto) {
         TipoIsolamento tipoIsolamento = tipoIsolamentoRepository.findById(id);
 
+        if (tipoIsolamento == null)
+            throw new RecursoNaoEncontradoException("Tipo isolamento não encontrado: id=" + id);
+
         tipoIsolamento.setDescricao(dto.descricao());
         tipoIsolamento.setEficienciaTermica(dto.eficienciaTermica());
     }
@@ -77,6 +81,8 @@ public class TipoIsolamentoServiceImpl implements TipoIsolamentoService {
     @Override
     @Transactional
     public void delete(Long id) {
-        tipoIsolamentoRepository.deleteById(id);
+        boolean deleted = tipoIsolamentoRepository.deleteById(id);
+        if (!deleted)
+            throw new RecursoNaoEncontradoException("Tipo de isolamento não encontrado: id=" + id);
     }
 }

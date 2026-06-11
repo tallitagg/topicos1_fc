@@ -1,5 +1,6 @@
 package org.acme.resources;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -11,6 +12,7 @@ import org.acme.service.ProdutoService;
 import java.util.logging.Logger;
 
 @Path("produtos")
+@PermitAll
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProdutoResource {
@@ -21,22 +23,28 @@ public class ProdutoResource {
     ProdutoService produtoService;
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @PermitAll
     public Response buscarTodos() {
         LOG.info("ProdutoResource#buscarTodas chamado");
         return Response.ok(produtoService.findAll()).build();
     }
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @Path("/{id}")
+    @PermitAll
+    public Response buscarPorId(@PathParam("id") Long id) {
+    return Response.ok(produtoService.findById(id)).build();
+}
+    /*@GET
+    @PermitAll
     @Path("/nome/{nome}")
     public Response buscarPorNome(@PathParam("nome") String nome) {
         LOG.info("ProdutoResource#buscarPorNome chamado - nome=" + nome);
         return Response.ok(produtoService.findByNome(nome)).build();
-    }
+    }*/
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @PermitAll
     @Path("/preco/{preco}")
     public Response buscarPorPreco(@PathParam("preco") Long preco) {
         LOG.info("ProdutoResource#buscarPorPreco chamado - preco=" + preco);
@@ -44,7 +52,7 @@ public class ProdutoResource {
     }
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @PermitAll
     @Path("/marca/{marca}")
     public Response buscarPorMarca(@PathParam("marca") String marca) {
         LOG.info("ProdutoResource#buscarPorMarca chamado - marca=" + marca);
@@ -52,7 +60,7 @@ public class ProdutoResource {
     }
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @PermitAll
     @Path("modelo/{modelo}")
     public Response buscarPorModelo(@PathParam("modelo") String modelo) {
         LOG.info("ProdutoResource#buscarPorModelo chamado - modelo=" + modelo);
@@ -60,7 +68,7 @@ public class ProdutoResource {
     }
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @PermitAll
     @Path("material/{material}")
     public Response buscarPorMaterial(@PathParam("material") String material) {
         LOG.info("ProdutoResource#buscarPorMaterial chamado - material=" + material);
@@ -68,7 +76,7 @@ public class ProdutoResource {
     }
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @PermitAll
     @Path("capacidade/{capacidade}")
     public Response buscarPorCapacidade(@PathParam("capacidade") Double capacidade) {
         LOG.info("ProdutoResource#buscarPorCapacidade chamado - capacidade=" + capacidade);
@@ -76,14 +84,14 @@ public class ProdutoResource {
     }
 
     @POST
-    @RolesAllowed({"ADM"})
+    @PermitAll
     public Response incluir(ProdutoDTO dto) {
         LOG.info("ProdutoResource#incluir chamado - dto=" + dto);
         return Response.status(Response.Status.CREATED).entity(produtoService.create(dto)).build();
     }
 
     @PUT
-    @RolesAllowed({"ADM"})
+    @PermitAll
     @Path("/{id}")
     public Response atualizar(@PathParam("id") Long id, ProdutoDTO dto) {
         LOG.info("ProdutoResource#alterar chamado - id=" + id + ", dto=" + dto);
@@ -92,7 +100,7 @@ public class ProdutoResource {
     }
 
     @DELETE
-    @RolesAllowed({"ADM"})
+    @PermitAll
     @Path("/{id}")
     public Response excluir(@PathParam("id") Long id) {
         LOG.info("ProdutoResource#excluir chamado - id=" + id);

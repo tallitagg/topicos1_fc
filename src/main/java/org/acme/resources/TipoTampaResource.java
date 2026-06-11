@@ -1,5 +1,6 @@
 package org.acme.resources;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -11,6 +12,7 @@ import org.acme.service.TipoTampaService;
 import java.util.logging.Logger;
 
 @Path("tipoTampas")
+@PermitAll
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TipoTampaResource {
@@ -21,14 +23,14 @@ public class TipoTampaResource {
     TipoTampaService tipoTampaService;
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @PermitAll
     public Response buscarTodos() {
         LOG.info("TipoTampaResource#buscarTodas chamado");
         return Response.ok(tipoTampaService.findAll()).build();
     }
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @PermitAll
     @Path("/descricao/{descricao}")
     public Response buscarPorDescricao(@PathParam("descricao") String descricao) {
         LOG.info("TipoTampaResource#buscarPorDescricao chamado - descricao=" + descricao);
@@ -36,7 +38,7 @@ public class TipoTampaResource {
     }
 
     @GET
-    @RolesAllowed({"USER","ADM"})
+    @PermitAll
     @Path("/material/{material}")
     public Response buscarPorMaterial(@PathParam("material") String material) {
         LOG.info("TipoTampaResource#buscarPorMaterial chamado - material=" + material);
@@ -44,14 +46,14 @@ public class TipoTampaResource {
     }
 
     @POST
-    @RolesAllowed({"ADM"})
+    @PermitAll
     public Response incluir(TipoTampaDTO dto) {
         LOG.info("TipoTampaResource#incluir chamado - dto=" + dto);
         return Response.status(Response.Status.CREATED).entity(tipoTampaService.create(dto)).build();
     }
 
     @PUT
-    @RolesAllowed({"ADM"})
+    @PermitAll
     @Path("/{id}")
     public Response atualizar(@PathParam("id") Long id, TipoTampaDTO dto) {
         LOG.info("TipoTampaResource#atualizar chamado - id=" + id + ", dto=" + dto);
@@ -60,7 +62,7 @@ public class TipoTampaResource {
     }
 
     @DELETE
-    @RolesAllowed({"ADM"})
+    @PermitAll
     @Path("/{id}")
     public Response excluir(@PathParam("id") Long id) {
         LOG.info("TipoTampaResource#excluir chamado - id=" + id);

@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.acme.dto.ModeloDTO;
 import org.acme.dto.ModeloResponseDTO;
+import org.acme.exceptions.RecursoNaoEncontradoException;
 import org.acme.model.Marca;
 import org.acme.model.Modelo;
 import org.acme.repository.MarcaRepository;
@@ -67,7 +68,7 @@ public class ModeloServiceImpl implements ModeloService {
     @Transactional
     public ModeloResponseDTO create(ModeloDTO dto) {
         Marca marca = marcaRepository.findById(dto.marcaId());
-        if (marca == null) throw new IllegalArgumentException("Marca não encontrada: id=" + dto.marcaId());
+        if (marca == null) throw new RecursoNaoEncontradoException("Marca não encontrada: id=" + dto.marcaId());
 
         Modelo m = new Modelo();
         m.setNome(dto.nome());
@@ -87,21 +88,31 @@ public class ModeloServiceImpl implements ModeloService {
     @Transactional
     public void update(Long id, ModeloDTO dto) {
         Modelo m = modeloRepository.findById(id);
-        if (m == null) throw new IllegalArgumentException("Modelo não encontrado: id=" + id);
+        if (m == null) throw new RecursoNaoEncontradoException("Modelo não encontrado: id=" + id);
 
         m.setNome(dto.nome());
         m.setAnoLancamento(dto.anoLancamento());
 
         if (dto.marcaId() != null && (m.getMarca() == null || !dto.marcaId().equals(m.getMarca().getId()))) {
             Marca novaMarca = marcaRepository.findById(dto.marcaId());
-            if (novaMarca == null) throw new IllegalArgumentException("Marca não encontrada: id=" + dto.marcaId());
+            if (novaMarca == null) throw new RecursoNaoEncontradoException("Marca não encontrada: id=" + dto.marcaId());
             m.setMarca(novaMarca);
         }
     }
 
-    @Override
-    @Transactional
-    public void delete(Long id) {
-        modeloRepository.deleteById(id);
+@Override
+@Transactional
+public void delete(Long id) {
+    Modelo modelo = modeloRepository.findById(id);
+
+    if (modelo == null) {
+        throw new RecursoNaoEncontradoException("Modelo não encontrado: id=" + id);
     }
+
+    if (modelo.getProdutos() != null && !((List<ModeloResponseDTO>) modelo.getProdutos()).isEmpty()) {
+        throw new IllegalArgumentException("Não é possível excluir este modelo, pois ele está vinculado a um produto.");
+    }
+
+    modeloRepository.delete(modelo);
+}
 }

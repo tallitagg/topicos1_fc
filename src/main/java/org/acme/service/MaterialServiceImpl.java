@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.acme.dto.MaterialDTO;
 import org.acme.dto.MaterialResponseDTO;
+import org.acme.exceptions.RecursoNaoEncontradoException;
 import org.acme.model.Material;
 import org.acme.repository.MaterialRepository;
 
@@ -31,7 +32,7 @@ public class MaterialServiceImpl implements MaterialService {
         if (material == null)
             return null;
 
-        return  MaterialResponseDTO.valueOf(material);
+        return MaterialResponseDTO.valueOf(material);
     }
 
     @Override
@@ -59,6 +60,9 @@ public class MaterialServiceImpl implements MaterialService {
     public void update(Long id, MaterialDTO dto) {
         Material material = materialRepository.findById(id);
 
+        if (material == null)
+            throw new RecursoNaoEncontradoException("Material não encontrado: id=" + id);
+
         material.setTipo(dto.tipo());
         material.setResistenciaTemperatura(dto.resistenciaTemperatura());
     }
@@ -66,6 +70,8 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     @Transactional
     public void delete(Long id) {
-        materialRepository.deleteById(id);
+        boolean deleted = materialRepository.deleteById(id);
+        if (!deleted)
+            throw new RecursoNaoEncontradoException("Material não encontrado: id=" + id);
     }
 }

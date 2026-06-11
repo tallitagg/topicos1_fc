@@ -9,6 +9,8 @@ public record ClienteDTO(
         String nome,
         String username,
         String senha,
+        String email,
+        String telefone,
         String cpf,
         Perfil perfil
 ) {}

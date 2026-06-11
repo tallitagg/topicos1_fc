@@ -1,5 +1,6 @@
 package org.acme.resources;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -11,6 +12,7 @@ import org.acme.service.CorService;
 import java.util.logging.Logger;
 
 @Path("cores")
+@PermitAll
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CorResource {
@@ -21,22 +23,29 @@ public class CorResource {
     private static final Logger LOG = Logger.getLogger(CorResource.class.getName());
 
     @GET
-    @RolesAllowed({"USER", "ADM"})
+    @PermitAll
     public Response buscarTodas() {
         LOG.info("CorResource#buscarTodas chamado");
         return Response.ok(corService.findAll()).build();
     }
 
     @GET
-    @Path("/{nome}")
-    @RolesAllowed({"USER", "ADM"})
+    @Path("/{id}")
+    @PermitAll
+    public Response buscarPorId(@PathParam("id") Long id) {
+    return Response.ok(corService.findById(id)).build();
+    }
+
+    @GET
+    @Path("/nome/{nome}")
+    @PermitAll
     public Response buscarPorNome(@PathParam("nome") String nome) {
         LOG.info("CorResource#buscarPorNome chamado - nome=" + nome);
         return Response.ok(corService.findByName(nome)).build();
     }
 
     @POST
-    @RolesAllowed({"ADM"})
+    @PermitAll
     public Response incluir(CorDTO dto) {
         LOG.info("CorResource#incluir chamado - dto=" + dto);
         return Response.status(Response.Status.CREATED).entity(corService.create(dto)).build();
@@ -44,7 +53,7 @@ public class CorResource {
 
     @PUT
     @Path("/{id}")
-    @RolesAllowed({"ADM"})
+    @PermitAll
     public Response alterar(@PathParam("id") Long id, CorDTO dto) {
         LOG.info("CorResource#alterar chamado - id=" + id + ", dto=" + dto);
         corService.update(id, dto);
@@ -53,7 +62,7 @@ public class CorResource {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed({"ADM"})
+    @PermitAll
     public Response excluir(@PathParam("id") Long id) {
         LOG.info("CorResource#excluir chamado - id=" + id);
         corService.delete(id);

@@ -20,7 +20,4 @@ public class PedidoRepository implements PanacheRepository<Pedido> {
                 "%" + username.toUpperCase() + "%");
     }
 
-    public PanacheQuery<Pedido> findByCidade(String cidade) {
-        return find("UPPER(enderecoentrega.cidade) LIKE ?1", "%" + cidade.toUpperCase() + "%");
-    }
 }
