@@ -1,6 +1,6 @@
 package org.acme.dto;
 
-import org.acme.model.*;
+import org.acme.model.Produto;
 
 import java.util.List;
 
@@ -16,13 +16,23 @@ public record ProdutoResponseDTO(
         TipoTampaResponseDTO tipoTampa,
         TipoIsolamentoResponseDTO tipoIsolamento,
         MaterialResponseDTO material,
-        List<CorResponseDTO> cores
+        List<CorResponseDTO> cores,
+        List<ArquivoResponseDTO> imagens
 ) {
     public static ProdutoResponseDTO valueOf(Produto produto) {
-        List<CorResponseDTO> cores = produto.getCores()
-                .stream()
-                .map(CorResponseDTO::valueOf)
-                .toList();
+        List<CorResponseDTO> cores = produto.getCores() == null
+                ? List.of()
+                : produto.getCores()
+                        .stream()
+                        .map(CorResponseDTO::valueOf)
+                        .toList();
+
+        List<ArquivoResponseDTO> imagens = produto.getArquivos() == null
+                ? List.of()
+                : produto.getArquivos()
+                        .stream()
+                        .map(ArquivoResponseDTO::valueOf)
+                        .toList();
 
         return new ProdutoResponseDTO(
                 produto.getId(),
@@ -36,7 +46,8 @@ public record ProdutoResponseDTO(
                 TipoTampaResponseDTO.valueOf(produto.getTipoTampa()),
                 TipoIsolamentoResponseDTO.valueOf(produto.getTipoIsolamento()),
                 MaterialResponseDTO.valueOf(produto.getMaterial()),
-                cores
-                );
+                cores,
+                imagens
+        );
     }
 }

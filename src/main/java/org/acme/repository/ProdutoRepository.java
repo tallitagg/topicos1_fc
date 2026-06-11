@@ -5,9 +5,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.acme.model.Produto;
 
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class ProdutoRepository implements PanacheRepository<Produto> {
+
     public List<Produto> findByNome(String nome) {
         return find("UPPER(nome) LIKE ?1", "%" + nome.toUpperCase() + "%").list();
     }
@@ -42,5 +44,13 @@ public class ProdutoRepository implements PanacheRepository<Produto> {
 
     public List<Produto> findByCapacidade(Double capacidade) {
         return find("capacidade = ?1", capacidade).list();
+    }
+
+    public Optional<Produto> findByArquivoId(Long arquivoId) {
+        return find("""
+                select p from Produto p
+                join p.arquivos a
+                where a.id = ?1
+                """, arquivoId).firstResultOptional();
     }
 }

@@ -1,14 +1,31 @@
 package org.acme.resources;
 
 import jakarta.annotation.security.PermitAll;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.acme.dto.ProdutoDTO;
-import org.acme.service.ProdutoService;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.Response.Status;
 
+import org.acme.dto.ProdutoDTO;
+import org.acme.service.ArquivoDownload;
+import org.acme.service.ProdutoFileServiceImpl;
+import org.acme.service.ProdutoService;
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+import java.io.IOException;
 import java.util.logging.Logger;
 
 @Path("produtos")
@@ -22,6 +39,9 @@ public class ProdutoResource {
     @Inject
     ProdutoService produtoService;
 
+    @Inject
+    ProdutoFileServiceImpl fileService;
+
     @GET
     @PermitAll
     public Response buscarTodos() {
@@ -33,15 +53,8 @@ public class ProdutoResource {
     @Path("/{id}")
     @PermitAll
     public Response buscarPorId(@PathParam("id") Long id) {
-    return Response.ok(produtoService.findById(id)).build();
-}
-    /*@GET
-    @PermitAll
-    @Path("/nome/{nome}")
-    public Response buscarPorNome(@PathParam("nome") String nome) {
-        LOG.info("ProdutoResource#buscarPorNome chamado - nome=" + nome);
-        return Response.ok(produtoService.findByNome(nome)).build();
-    }*/
+        return Response.ok(produtoService.findById(id)).build();
+    }
 
     @GET
     @PermitAll
@@ -105,6 +118,49 @@ public class ProdutoResource {
     public Response excluir(@PathParam("id") Long id) {
         LOG.info("ProdutoResource#excluir chamado - id=" + id);
         produtoService.delete(id);
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/image/download/{fid}")
+    @PermitAll
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response download(@PathParam("fid") String fid) {
+        ArquivoDownload download = fileService.download(fid);
+
+        ResponseBuilder response = Response.ok(download.content(), download.contentType());
+        response.header("Content-Disposition", "attachment; filename=\"" + download.fileName().replace("\"", "") + "\"");
+
+        return response.build();
+    }
+
+    @PATCH
+    @Path("/image/upload")
+    @PermitAll
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response salvarImagem(
+            @RestForm("idProduto")
+            @NotNull(message = "idProduto é obrigatório.")
+            @Min(value = 1, message = "idProduto deve ser maior ou igual a 1.")
+            Long idProduto,
+
+            @RestForm("file")
+            @NotNull(message = "Arquivo de imagem é obrigatório.")
+            FileUpload file) {
+
+        try {
+            fileService.salvar(idProduto, file);
+            return Response.noContent().build();
+        } catch (IOException e) {
+            return Response.status(Status.CONFLICT).build();
+        }
+    }
+
+    @DELETE
+    @Path("/image/{fid}")
+    @PermitAll
+    public Response removerImagem(@PathParam("fid") String fid) {
+        fileService.remover(fid);
         return Response.noContent().build();
     }
 }

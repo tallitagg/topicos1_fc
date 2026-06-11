@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 @ApplicationScoped
 public class CadastroBasicoServiceImpl implements CadastroBasicoService {
+
     @Inject
     ClienteRepository clienteRepository;
 
@@ -27,6 +28,8 @@ public class CadastroBasicoServiceImpl implements CadastroBasicoService {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome());
         usuario.setUsername(dto.username());
+        usuario.setEmail(dto.email());
+        usuario.setTelefone(dto.telefone());
         usuario.setSenha(hashService.getHashSenha(dto.senha()));
         usuario.setPerfil(dto.perfil());
 
@@ -39,5 +42,4 @@ public class CadastroBasicoServiceImpl implements CadastroBasicoService {
 
         return CadastroBasicoResponseDTO.valueOf(cliente);
     }
-
 }
